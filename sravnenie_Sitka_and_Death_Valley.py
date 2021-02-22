@@ -4,18 +4,23 @@ from datetime import datetime
 from matplotlib import pyplot as plt
 
 
-def get_weather_data_for_sitka(filename, dates, highs, lows):
+def get_weather_data(filename, dates, highs, lows):
     """Получение высоких и низких температур из файла данных."""
     with open(filename) as f:
         reader = csv.reader(f)
         header_row = next(reader)
 
+        date_index = header_row.index('DATE')
+        high_index = header_row.index('TMAX')
+        low_index = header_row.index('TMIN')
+        name_index = header_row.index('NAME')
+
         # dates, highs, lows = [], [], []
         for row in reader:
             try:
-                current_date = datetime.strptime(row[2], "%Y-%m-%d")
-                high = int(row[5])
-                low = int(row[6])
+                current_date = datetime.strptime(row[date_index], "%Y-%m-%d")
+                high = int(row[high_index])
+                low = int(row[low_index])
             except ValueError:
                 print(current_date, 'missing data')
             else:
