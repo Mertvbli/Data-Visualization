@@ -10,7 +10,7 @@ print(f"Status code: {r.status_code}")
 # Обработка информации о каждой статье.
 submission_ids = r.json()
 submission_dicts = []
-for submission_id in submission_ids[:20]:
+for submission_id in submission_ids[:30]:
     # Создание отдельного вызова API для каждой статьи.
     url = f"https://hacker-news.firebaseio.com/v0/item/{submission_id}.json"
     r = requests.get(url)
@@ -18,12 +18,17 @@ for submission_id in submission_ids[:20]:
     response_dict = r.json()
 
     # Построение словаря для каждой статьи.
-    submission_dict = {
-        'title': response_dict['title'],
-        'hn_link': f"http://news.ycombinator.com/item?id={submission_id}",
-        'comments': response_dict['descendants'],
-    }
-    submission_dicts.append(submission_dict)
+    try:
+        submission_dict = {
+            'title': response_dict['title'],
+            'hn_link': f"http://news.ycombinator.com/item?id={submission_id}",
+            'comments': response_dict['descendants'],
+        }
+    except KeyError:
+        # Это специальный пост YC с отключенными комментариями.
+        continue
+    else:
+        submission_dicts.append(submission_dict)
 
 submission_dicts = sorted(submission_dicts, key=itemgetter('comments'), reverse=True)
 
